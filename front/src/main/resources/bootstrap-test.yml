@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spmart?serverTimezone=Asia/Seoul&useSSL=false
+    username: root
+    password: qwert12345
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format-sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+  flyway:
+    url: jdbc:mysql://localhost:3306/spmart?serverTimezone=Asia/Seoul&useSSL=false
+    user: root
+    password: qwert12345
+    locations: filesystem:../flyway/migration
+    table: review_flyway_schema_history
+
