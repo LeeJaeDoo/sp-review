@@ -5,11 +5,11 @@ dependencies {
 }
 
 configure<OpenApi3Extension> {
-    setServer(rootProject.property("openapi.url") as String + ":8080")
+    setServer(rootProject.property("openapi.url") as String + ":8081")
     title = "${rootProject.name}-${project.name}"
     version = project.version as String
     description = """
-                  | Member front API
+                  | Review front API
                   """.trimMargin()
     format = "yml"
     separatePublicApi = true
