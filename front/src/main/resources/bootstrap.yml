@@ -13,14 +13,14 @@ spring:
   profiles: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/spmart?serverTimezone=Asia/Seoul&useSSL=false
+    url: jdbc:mysql://localhost:3306/spmart?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: qwert12345
+    password: a90a1027a
   jpa:
     database: mysql
     show-sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -37,10 +37,6 @@ feign:
         connectTimeout: 4000
         readTimeout: 4000
         loggerLevel: full
-
-auth-internal:
-  ribbon:
-    listOfServers: http://localhost:8081
 
 management:
   endpoint:
@@ -64,9 +60,9 @@ spring:
   profiles: alpha
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/spmart?serverTimezone=Asia/Seoul&useSSL=false
-    username: root
-    password: root1234
+    url: jdbc:mysql://15.165.67.225:3306/sp_review?serverTimezone=Asia/Seoul&useSSL=false
+    username: dlwoen
+    password: dlwoen
   jpa:
     database: mysql
     show-sql: true
@@ -88,10 +84,6 @@ feign:
         connectTimeout: 4000
         readTimeout: 4000
         loggerLevel: full
-
-auth-internal:
-  ribbon:
-    listOfServers: http://localhost:8081
 
 management:
   endpoint:
