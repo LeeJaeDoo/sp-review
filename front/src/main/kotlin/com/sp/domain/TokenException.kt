@@ -1,14 +1,8 @@
-/*
- * © NHN Corp. All rights reserved.
- * NHN Corp. PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
- */
-
 package com.sp.domain
 
 
-
 /**
- * @author Hyunsu Bae
+ * @author Jaedoo Lee
  */
 abstract class TokenException(val errorCode: ErrorCode) : RuntimeException() {
 
