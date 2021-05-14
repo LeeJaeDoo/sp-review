@@ -44,7 +44,7 @@ plugins {
 }
 
 flyway {
-    table = "member_flyway_schema_history"
+    table = "review_flyway_schema_history"
     locations = arrayOf("filesystem:${rootProject.projectDir}/flyway/migration")
     url = property("database.url") as String
     user = property("database.username") as String
