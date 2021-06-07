@@ -14,7 +14,7 @@ data class ReviewSummary(
     val storeNo: Long,
     val accessible: Boolean,
     val reliable: Boolean,
-    val registerYmdt: LocalDateTime?,
+    val registerYmdt: LocalDateTime,
     val updateYmdt: LocalDateTime?,
 ) {
     companion object {

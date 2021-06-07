@@ -13,7 +13,7 @@ spring:
   profiles: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/sp_review?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/sp_mart?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     username: dlwoen
     password: dlwoen
   jpa:
@@ -60,7 +60,7 @@ spring:
   profiles: alpha
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://15.165.67.225:3306/sp_review?serverTimezone=Asia/Seoul&useSSL=false
+    url: jdbc:mysql://localhost:3306/sp_mart?serverTimezone=Asia/Seoul&useSSL=false
     username: dlwoen
     password: dlwoen
   jpa:

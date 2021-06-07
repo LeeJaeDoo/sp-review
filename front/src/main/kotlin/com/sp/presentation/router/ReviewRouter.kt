@@ -18,7 +18,7 @@ class ReviewRouter(
     @Bean
     fun routeReview() : RouterFunction<ServerResponse> {
         return coRouter {
-            ("/backend/reviews" and headers { "1.0" in it.header("Version") }).nest {
+            ("/front/reviews" and headers { "1.0" in it.header("Version") }).nest {
                 accept(MediaType.APPLICATION_JSON).nest {
                     POST("{storeNo}", reviewHandler::register)
                     GET("", reviewHandler::getReviewByMember)
