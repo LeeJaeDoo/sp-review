@@ -1,22 +1,35 @@
 package com.sp.presentation.router
 
-import com.epages.restdocs.apispec.*
-import com.ninjasquad.springmockk.*
-import com.sp.application.*
-import com.sp.presentation.*
-import com.sp.presentation.handler.*
-import com.sp.presentation.request.*
-import io.mockk.*
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.extension.*
-import org.springframework.boot.test.autoconfigure.web.reactive.*
-import org.springframework.context.*
-import org.springframework.http.*
-import org.springframework.restdocs.*
-import org.springframework.restdocs.payload.*
-import org.springframework.restdocs.webtestclient.*
-import org.springframework.test.context.*
-import org.springframework.test.web.reactive.server.*
+import com.epages.restdocs.apispec.ResourceDocumentation
+import com.epages.restdocs.apispec.ResourceSnippetParameters
+import com.epages.restdocs.apispec.SimpleType
+import com.ninjasquad.springmockk.MockkBean
+import com.sp.application.ReviewCommandService
+import com.sp.application.ReviewQueryService
+import com.sp.application.ReviewSummary
+import com.sp.presentation.FrontApiTestSupportFilterFunction
+import com.sp.presentation.MemberInfoConstant
+import com.sp.presentation.MemberInfoFilter
+import com.sp.presentation.handler.ReviewHandler
+import com.sp.presentation.model.PageInfo
+import com.sp.presentation.request.ReviewRegisterRequest
+import io.mockk.coEvery
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
+import org.springframework.context.ApplicationContext
+import org.springframework.data.domain.PageImpl
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.restdocs.RestDocumentationContextProvider
+import org.springframework.restdocs.RestDocumentationExtension
+import org.springframework.restdocs.payload.JsonFieldType
+import org.springframework.restdocs.payload.PayloadDocumentation
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.web.reactive.server.WebTestClient
+import java.time.LocalDateTime
 
 /**
  * @author Jaedoo Lee
@@ -32,6 +45,9 @@ internal class ReviewRouterTest(private val context: ApplicationContext) {
 
     @MockkBean
     private lateinit var reviewCommandService: ReviewCommandService
+
+    @MockkBean
+    private  lateinit var reviewQueryService: ReviewQueryService
 
     @BeforeEach
     fun setup(restDocumentation: RestDocumentationContextProvider) {
@@ -57,7 +73,7 @@ internal class ReviewRouterTest(private val context: ApplicationContext) {
         coEvery { reviewCommandService.registerReview(any()) } returns 1L
 
         webTestClient.post()
-            .uri("/reviews/stores/{storeNo}", storeNo)
+            .uri("/reviews/{storeNo}", storeNo)
             .header("Version", "1.0")
             .header(MemberInfoConstant.ACCESS_TOKEN_HEADER, MemberInfoConstant.TEST_ACCESS_TOKEN)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -97,6 +113,59 @@ internal class ReviewRouterTest(private val context: ApplicationContext) {
                                     .description("과자 정보 신뢰도")
                                     .type(JsonFieldType.BOOLEAN)
                             ).build()
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `마이페이지 리뷰 조회`() {
+        val pageInfo = PageInfo(1, 10)
+
+        val response = PageImpl((1L..10L).map {
+            ReviewSummary(
+                reviewNo = it,
+                title = "동행",
+                content = "넌 울고 있었고 난 무력했지 슬픔을 보듬기엔 내가 너무 작아서 그런 널 바라보며 내가 할 수 있던 건 함께 울어주기",
+                imageUrl = "http://image.url",
+                storeNo = it,
+                accessible = true,
+                reliable = true,
+                registerYmdt = LocalDateTime.now(),
+                updateYmdt = null
+            )
+        }).toList()
+
+        coEvery { reviewQueryService.getReviews(any(), any()) } returns response
+
+        webTestClient.get()
+            .uri("/reviews?page=${pageInfo.pageNumber}&pageSize=${pageInfo.pageSize}")
+            .header("Version", "1.0")
+            .header(MemberInfoConstant.ACCESS_TOKEN_HEADER, MemberInfoConstant.TEST_ACCESS_TOKEN)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody().consumeWith(
+                WebTestClientRestDocumentation.document(
+                    "mypage-reviews",
+                    ResourceDocumentation.resource(
+                        ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .description("마이페이지 리뷰 조회")
+                            .requestHeaders(
+                                ResourceDocumentation.headerWithName("Version")
+                                    .description("버전"),
+                                ResourceDocumentation.headerWithName(MemberInfoConstant.ACCESS_TOKEN_HEADER)
+                                    .description("AccessToken")
+                            ).requestParameters(
+                                ResourceDocumentation.parameterWithName("page")
+                                    .description("페이지")
+                                    .type(SimpleType.NUMBER),
+                                ResourceDocumentation.parameterWithName("pageSize")
+                                    .description("페이지 크기")
+                                    .type(SimpleType.NUMBER)
+                            ).responseFields(*toDescriptors("[].")).build()
                     )
                 )
             )

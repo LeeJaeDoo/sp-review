@@ -1,17 +1,15 @@
 package com.sp.domain.entity
 
-import com.sp.domain.review.*
-import org.hibernate.annotations.*
-import java.time.*
+import com.sp.domain.review.ReviewRegisterModel
+import org.hibernate.annotations.Type
+import java.time.LocalDateTime
 import javax.persistence.*
-import javax.persistence.Entity
-import javax.persistence.Table
 
 /**
  * @author Jaedoo Lee
  */
 @Entity
-@Table(name = "mt_review")
+@Table(name = "mart_review")
 data class Review (
 
     @Id
@@ -45,7 +43,7 @@ data class Review (
 ) {
 
     @Column(name = "register_ymdt")
-    val registerYmdt: LocalDateTime? = LocalDateTime.now()
+    val registerYmdt: LocalDateTime = LocalDateTime.now()
 
     @Column(name = "update_ymdt")
     val updateYmdt: LocalDateTime? = null

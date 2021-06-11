@@ -1,18 +1,25 @@
 package com.sp.presentation.handler
 
-import com.sp.application.*
-import com.sp.presentation.*
-import com.sp.presentation.request.*
-import io.mockk.*
+import com.sp.application.ReviewCommandService
+import com.sp.application.ReviewQueryService
+import com.sp.application.ReviewSummary
+import com.sp.presentation.MemberInfoConstant
+import com.sp.presentation.model.PageInfo
+import com.sp.presentation.request.ReviewRegisterRequest
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.*
-import kotlinx.coroutines.*
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.extension.*
-import org.springframework.http.*
-import org.springframework.mock.web.reactive.function.server.*
-import reactor.core.publisher.*
+import io.mockk.junit5.MockKExtension
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.PageImpl
+import org.springframework.http.HttpStatus
+import org.springframework.mock.web.reactive.function.server.MockServerRequest
+import reactor.core.publisher.Mono
+import java.time.LocalDateTime
 
 /**
  * @author Jaedoo Lee
@@ -23,11 +30,14 @@ internal class ReviewHandlerTest {
     @MockK
     private lateinit var reviewCommandService: ReviewCommandService
 
+    @MockK
+    private lateinit var reviewQueryService: ReviewQueryService
+
     private lateinit var reviewHandler: ReviewHandler
 
     @BeforeEach
     fun setUp() {
-        reviewHandler = ReviewHandler(reviewCommandService)
+        reviewHandler = ReviewHandler(reviewCommandService, reviewQueryService)
     }
 
     @Test
@@ -55,6 +65,38 @@ internal class ReviewHandlerTest {
         assertEquals(HttpStatus.CREATED, response.statusCode())
         coVerify { reviewCommandService.registerReview(any()) }
 
+    }
+
+    @Test
+    fun `마이페이지 리뷰 조회`() {
+        val memberInfo = MemberInfoConstant.testMemberInfo
+        val pageInfo = PageInfo(1, 10)
+
+        val request = MockServerRequest.builder()
+            .attribute(MemberInfoConstant.ATTRIBUTE_NAME, memberInfo)
+            .body(Mono.just(pageInfo))
+
+        val reviews = PageImpl((1L..10L).map {
+            ReviewSummary(
+                reviewNo = it,
+                title = "동행",
+                content = "넌 울고 있었고 난 무력했지 슬픔을 보듬기엔 내가 너무 작아서 그런 널 바라보며 내가 할 수 있던 건 함께 울어주기",
+                imageUrl = "http://image.url",
+                storeNo = it,
+                accessible = true,
+                reliable = true,
+                registerYmdt = LocalDateTime.MAX,
+                updateYmdt = null
+            )
+        }).toList()
+
+        coEvery { reviewQueryService.getReviews(pageInfo, memberInfo.no) } returns reviews
+
+        //when
+        val response = runBlocking { reviewHandler.getReviewByMember(request) }
+        //then
+        assertEquals(HttpStatus.OK, response.statusCode())
+        coVerify { reviewQueryService.getReviews(any(), any()) }
     }
 
 }
