@@ -22,6 +22,9 @@ fun toDescriptors(prefix: String = ""): Array<FieldDescriptor> = arrayOf(
         .type(JsonFieldType.STRING)
         .description("이미지 링크")
         .optional(),
+    fieldWithPath("${prefix}memberNo")
+        .type(JsonFieldType.NUMBER)
+        .description("회원 번호"),
     fieldWithPath("${prefix}storeNo")
         .type(JsonFieldType.NUMBER)
         .description("상점 번호"),

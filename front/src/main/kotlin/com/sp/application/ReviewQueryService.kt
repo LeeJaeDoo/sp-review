@@ -12,8 +12,14 @@ import org.springframework.stereotype.Service
 class ReviewQueryService(
     private val reviewRepository: ReviewRepository
 ) {
-    suspend fun getReviews(pageable: Pageable, memberNo: Long): List<ReviewSummary> {
+    suspend fun getReviewsByMember(pageable: Pageable, memberNo: Long): List<ReviewSummary> {
         return reviewRepository.findAllByMemberNoOrderByNoDesc(memberNo, pageable).let { review ->
+            review.content.map { ReviewSummary.of(it) }
+        }
+    }
+
+    suspend fun getReviewsByStore(pageable: Pageable, storeNo: Long): List<ReviewSummary> {
+        return reviewRepository.findAllByStoreNoOrderByNoDesc(storeNo, pageable).let { review ->
             review.content.map { ReviewSummary.of(it) }
         }
     }

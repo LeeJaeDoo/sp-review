@@ -82,6 +82,7 @@ internal class ReviewHandlerTest {
                 title = "동행",
                 content = "넌 울고 있었고 난 무력했지 슬픔을 보듬기엔 내가 너무 작아서 그런 널 바라보며 내가 할 수 있던 건 함께 울어주기",
                 imageUrl = "http://image.url",
+                memberNo = it,
                 storeNo = it,
                 accessible = true,
                 reliable = true,
@@ -90,13 +91,46 @@ internal class ReviewHandlerTest {
             )
         }).toList()
 
-        coEvery { reviewQueryService.getReviews(pageInfo, memberInfo.no) } returns reviews
+        coEvery { reviewQueryService.getReviewsByMember(pageInfo, memberInfo.no) } returns reviews
 
         //when
         val response = runBlocking { reviewHandler.getReviewByMember(request) }
         //then
         assertEquals(HttpStatus.OK, response.statusCode())
-        coVerify { reviewQueryService.getReviews(any(), any()) }
+        coVerify { reviewQueryService.getReviewsByMember(any(), any()) }
+    }
+
+    @Test
+    fun `상점별 리뷰 조회`() {
+        val storeNo = 1L
+        val pageInfo = PageInfo(1, 10)
+
+        val request = MockServerRequest.builder()
+            .pathVariable("storeNo", storeNo.toString())
+            .body(Mono.just(pageInfo))
+
+        val reviews = PageImpl((1L..10L).map {
+            ReviewSummary(
+                reviewNo = it,
+                title = "동행",
+                content = "넌 울고 있었고 난 무력했지 슬픔을 보듬기엔 내가 너무 작아서 그런 널 바라보며 내가 할 수 있던 건 함께 울어주기",
+                imageUrl = "http://image.url",
+                memberNo = it,
+                storeNo = it,
+                accessible = true,
+                reliable = true,
+                registerYmdt = LocalDateTime.MAX,
+                updateYmdt = null
+            )
+        }).toList()
+
+        coEvery { reviewQueryService.getReviewsByStore(pageInfo, storeNo) } returns reviews
+
+        //when
+        val response = runBlocking { reviewHandler.getReviewByStore(request) }
+        //then
+        assertEquals(HttpStatus.OK, response.statusCode())
+        coVerify { reviewQueryService.getReviewsByStore(any(), any()) }
     }
 
 }

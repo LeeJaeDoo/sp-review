@@ -1,2 +1,2 @@
-rootProject.name = "sp-review"
+rootProject.name = "sp-mart"
 include("core", "front", "internal")

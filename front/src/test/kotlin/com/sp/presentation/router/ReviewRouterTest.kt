@@ -128,6 +128,7 @@ internal class ReviewRouterTest(private val context: ApplicationContext) {
                 title = "동행",
                 content = "넌 울고 있었고 난 무력했지 슬픔을 보듬기엔 내가 너무 작아서 그런 널 바라보며 내가 할 수 있던 건 함께 울어주기",
                 imageUrl = "http://image.url",
+                memberNo = it,
                 storeNo = it,
                 accessible = true,
                 reliable = true,
@@ -136,7 +137,7 @@ internal class ReviewRouterTest(private val context: ApplicationContext) {
             )
         }).toList()
 
-        coEvery { reviewQueryService.getReviews(any(), any()) } returns response
+        coEvery { reviewQueryService.getReviewsByMember(any(), any()) } returns response
 
         webTestClient.get()
             .uri("/reviews?page=${pageInfo.pageNumber}&pageSize=${pageInfo.pageSize}")
@@ -158,6 +159,58 @@ internal class ReviewRouterTest(private val context: ApplicationContext) {
                                     .description("버전"),
                                 ResourceDocumentation.headerWithName(MemberInfoConstant.ACCESS_TOKEN_HEADER)
                                     .description("AccessToken")
+                            ).requestParameters(
+                                ResourceDocumentation.parameterWithName("page")
+                                    .description("페이지")
+                                    .type(SimpleType.NUMBER),
+                                ResourceDocumentation.parameterWithName("pageSize")
+                                    .description("페이지 크기")
+                                    .type(SimpleType.NUMBER)
+                            ).responseFields(*toDescriptors("[].")).build()
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `상점별 리뷰 조회`() {
+        val storeNo = 1L
+        val pageInfo = PageInfo(1, 10)
+
+        val response = PageImpl((1L..10L).map {
+            ReviewSummary(
+                reviewNo = it,
+                title = "동행",
+                content = "넌 울고 있었고 난 무력했지 슬픔을 보듬기엔 내가 너무 작아서 그런 널 바라보며 내가 할 수 있던 건 함께 울어주기",
+                imageUrl = "http://image.url",
+                memberNo = it,
+                storeNo = it,
+                accessible = true,
+                reliable = true,
+                registerYmdt = LocalDateTime.now(),
+                updateYmdt = null
+            )
+        }).toList()
+
+        coEvery { reviewQueryService.getReviewsByStore(any(), any()) } returns response
+
+        webTestClient.get()
+            .uri("/reviews/{storeNo}?page=${pageInfo.pageNumber}&pageSize=${pageInfo.pageSize}", storeNo)
+            .header("Version", "1.0")
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody().consumeWith(
+                WebTestClientRestDocumentation.document(
+                    "store-reviews",
+                    ResourceDocumentation.resource(
+                        ResourceSnippetParameters.builder()
+                            .tag(TAG)
+                            .description("상점별 리뷰 조회")
+                            .requestHeaders(
+                                ResourceDocumentation.headerWithName("Version")
+                                    .description("버전")
                             ).requestParameters(
                                 ResourceDocumentation.parameterWithName("page")
                                     .description("페이지")

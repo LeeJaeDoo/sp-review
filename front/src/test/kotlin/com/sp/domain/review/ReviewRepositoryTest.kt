@@ -16,7 +16,7 @@ internal class ReviewRepositoryTest(
 ) : TestDataSupport() {
 
     @Test
-    fun `리뷰 조회 테스트1`() {
+    fun `회원별_리뷰 조회 테스트(페이지_사이즈1)`() {
         val memberNo = 1L
         val page = 1
         val pageSize = 10
@@ -28,7 +28,7 @@ internal class ReviewRepositoryTest(
     }
 
     @Test
-    fun `리뷰 조회 테스트2`() {
+    fun `회원별_리뷰 조회 테스트(페이지_사이즈2)`() {
         val memberNo = 2L
         val page = 1
         val pageSize = 10
@@ -40,7 +40,7 @@ internal class ReviewRepositoryTest(
     }
 
     @Test
-    fun `리뷰 조회 테스트3`() {
+    fun `회원별_리뷰 조회 테스트(정렬)`() {
         val memberNo = 1L
         val page = 1
         val pageSize = 2
@@ -49,5 +49,29 @@ internal class ReviewRepositoryTest(
         val reviews = reviewRepository.findAllByMemberNoOrderByNoDesc(memberNo, pageInfo)
 
         assertTrue(reviews.first().no > reviews.last().no)
+    }
+
+    @Test
+    fun `상점별_리뷰 조회 테스트(페이지_사이즈1)`() {
+        val storeNo = 1L
+        val page = 1
+        val pageSize = 10
+        val pageInfo = PageInfo(page, pageSize)
+
+        val reviews = reviewRepository.findAllByStoreNoOrderByNoDesc(storeNo, pageInfo)
+
+        assertEquals(pageSize, reviews.content.size)
+    }
+
+    @Test
+    fun `상점별_리뷰 조회 테스트(페이지_사이즈2)`() {
+        val storeNo = 1L
+        val page = 2
+        val pageSize = 10
+        val pageInfo = PageInfo(page, pageSize)
+
+        val reviews = reviewRepository.findAllByStoreNoOrderByNoDesc(storeNo, pageInfo)
+
+        assertEquals(2, reviews.content.size)
     }
 }
