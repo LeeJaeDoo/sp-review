@@ -22,6 +22,7 @@ class ReviewRouter(
                 accept(MediaType.APPLICATION_JSON).nest {
                     POST("{storeNo}", reviewHandler::register)
                     GET("", reviewHandler::getReviewByMember)
+                    GET("{storeNo}", reviewHandler::getReviewByStore)
                 }
             }
         }

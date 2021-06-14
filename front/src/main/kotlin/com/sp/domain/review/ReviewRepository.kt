@@ -12,4 +12,6 @@ interface ReviewRepository : JpaRepository<Review, Long> {
 
     fun findAllByMemberNoOrderByNoDesc(memberNo: Long, pageable: Pageable) : Page<Review>
 
+    fun findAllByStoreNoOrderByNoDesc(storeNo: Long, pageable: Pageable) : Page<Review>
+
 }

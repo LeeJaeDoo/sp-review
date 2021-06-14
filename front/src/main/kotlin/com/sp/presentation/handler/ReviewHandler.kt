@@ -40,7 +40,15 @@ class ReviewHandler(
         val memberInfo = request.extractMemberInfo()
         val params = request.extractParams<PageInfo>()
 
-        return ok().bodyValueAndAwait(reviewQueryService.getReviews(params, memberInfo.no))
+        return ok().bodyValueAndAwait(reviewQueryService.getReviewsByMember(params, memberInfo.no))
+
+    }
+
+    suspend fun getReviewByStore(request: ServerRequest): ServerResponse {
+        val storeNo = request.pathVariableToLong("storeNo")
+        val params = request.extractParams<PageInfo>()
+
+        return ok().bodyValueAndAwait(reviewQueryService.getReviewsByStore(params, storeNo))
 
     }
 

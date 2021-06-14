@@ -1,6 +1,6 @@
 -- auto-generated definition
-DROP TABLE IF EXISTS `mt_review`;
-CREATE TABLE mt_review
+DROP TABLE IF EXISTS `mart_review`;
+CREATE TABLE mart_review
 (
     `review_no`                    int(11)        NOT NULL AUTO_INCREMENT,
     `title`                        varchar(400)   CHARACTER SET utf8mb4 DEFAULT NULL,
